@@ -1,5 +1,5 @@
 # 🚀 PortaGit Station v1.6.0
-### Developed by [MANORANJAN](https://github.com/Electroiot)
+### Developed by [MANORANJAN](https://github.com/manoranjan2050)
 
 **PortaGit Station** is a powerful, portable Git command center for developers. Manage multiple GitHub accounts with instant switching, 1-click sync, and built-in code editing. Featuring a beautiful UI, activity heatmaps, and secure local encryption, it’s the ultimate station for your repositories. High-performance Git management, anywhere you go.
 
@@ -50,13 +50,14 @@ To create a standalone file that doesn't need Python:
 ## 👨‍💻 Author & Credits
 Developed with ❤️ by **MANORANJAN**.
 - **GitHub:** [@Electroiot](https://github.com/Electroiot)
+- **GitHub:** [@manoranjan2050](https://github.com/manoranjan2050)
 - **Website:** [electroiot.in](https://electroiot.in)
 
 ### 🤝 Contributing & Attributions
 If you use this project's dashboard design or source code in your own projects, please provide proper attribution by linking back to the original repository and the developer's GitHub profile. 
 
 **To Give Credit:**
-> "Based on [PortaGit Station](https://github.com/Electroiot/PortaGit-Station) by [MANORANJAN](https://github.com/Electroiot)"
+> "Based on [PortaGit Station](https://github.com/manoranjan2050/PortaGit-Station) by [MANORANJAN](https://github.com/manoranjan2050)"
 
 ---
 

@@ -13,7 +13,6 @@ env/
 venv/
 .env/
 build/
-dist/
 *.spec
 
 # --- OS Specific ---
