@@ -735,11 +735,23 @@ def commit_repository(id):
         repo = git.Repo(repo_data.local_path)
         with repo.config_writer() as cw:
             cw.set_value("user", "name", acc.github_user); cw.set_value("user", "email", acc.email)
-        repo.git.add(A=True); repo.index.commit(request.form.get('message'))
+        
+        # Check if anything is already staged
+        staged_files = repo.index.diff("HEAD") if repo.heads else repo.git.diff('--cached', name_only=True).splitlines()
+        
+        # If nothing is staged, auto-stage all (legacy behavior/convenience)
+        if not staged_files:
+            repo.git.add(A=True)
+            
+        repo.index.commit(request.form.get('message'))
+        flash("Committed successfully.")
+        
         if request.form.get('push') == 'true':
             token = decrypt_token(acc.token); origin = repo.remotes.origin; old_url = origin.url
             origin.set_url(get_authenticated_url(repo_data.remote_url, acc.github_user, token))
-            try: repo.git.push('--set-upstream', 'origin', repo.active_branch.name)
+            try: 
+                repo.git.push('--set-upstream', 'origin', repo.active_branch.name)
+                flash("Pushed successfully.")
             finally: origin.set_url(old_url)
     except Exception as e: flash(f"Error: {str(e)}")
     return redirect(url_for('manage_repository', id=id))
