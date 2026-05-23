@@ -3,16 +3,6 @@
 
 **PortaGit Station** is a powerful, portable Git command center for developers. Manage multiple GitHub accounts with instant switching, 1-click sync, and built-in code editing. Featuring a beautiful UI, activity heatmaps, and secure local encryption, it’s the ultimate station for your repositories. High-performance Git management, anywhere you go.
 
----
-
-# 🛑 SAFETY FIRST: DO NOT PUBLISH THESE FILES
-Before you upload this code to GitHub, ensure you do **NOT** include your personal data.
-Add these to your `.gitignore` file:
-- `data/git_dashboard.db` (Your local database with repo paths)
-- `data/secret.key` (Your encryption key - IF LOST, TOKENS CANNOT BE DECRYPTED)
-- `__pycache__/`
-- `dist/` and `build/`
-- `.env`
 
 ---
 
