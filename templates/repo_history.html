@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block page_title %}Commit History: {{ repo.name }}{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Full Commit History</h3>
+    <div class="card-actions">
+      <a href="/repositories/manage/{{ repo.id }}" class="btn btn-white btn-sm">Back to Manage</a>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-vcenter card-table">
+      <thead>
+        <tr>
+          <th>Hash</th>
+          <th>Author</th>
+          <th>Date</th>
+          <th>Message</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for commit in commits %}
+        <tr>
+          <td class="text-secondary font-monospace">{{ commit.hexsha[:7] }}</td>
+          <td>{{ commit.author_name }}</td>
+          <td class="text-nowrap">{{ commit.date }}</td>
+          <td class="text-wrap"><strong>{{ commit.summary }}</strong></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page page-center">
+  <div class="container container-tight py-4">
+    <div class="text-center mb-4">
+      <a href="." class="navbar-brand navbar-brand-autodark">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-git text-orange me-2" width="32" height="32" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M16 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M12 8m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M12 16m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M12 12h5.5" /><path d="M12 8l0 4" /><path d="M12 12l0 4" /><path d="M12 12l-1 -1" /><path d="M12 12l-1 1" /><path d="M4.893 4.893a10 10 0 1 1 14.214 14.214a10 10 0 0 1 -14.214 -14.214z" /></svg>
+        <span class="h1">PortaGit Station Login</span>
+      </a>
+    </div>
+    <div class="card card-md">
+      <div class="card-body">
+        <h2 class="h2 text-center mb-4">Login to your account</h2>
+        <form action="/login" method="post" autocomplete="off" novalidate>
+          <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input type="text" name="username" class="form-control" placeholder="your_username" autocomplete="off" required>
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Password</label>
+            <input type="password" name="password" class="form-control" placeholder="Your password" autocomplete="off" required>
+          </div>
+          <div class="form-footer">
+            <button type="submit" class="btn btn-primary w-100">Sign in</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="text-center text-secondary mt-3">
+      Don't have account yet? <a href="/register" tabindex="-1">Sign up</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

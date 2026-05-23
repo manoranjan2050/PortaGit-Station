@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block page_title %}Activity Log{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">User Action History</h3>
+    <div class="card-actions">
+      <a href="" class="btn btn-white btn-sm">Refresh</a>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table card-table table-vcenter text-nowrap">
+      <thead>
+        <tr>
+          <th>Timestamp</th>
+          <th>Action</th>
+          <th>Repository</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in logs %}
+        <tr>
+          <td class="text-secondary small">{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+          <td>
+            <span class="badge bg-blue-lt">{{ log.action }}</span>
+          </td>
+          <td>
+            {% if log.repo_name %}
+            <strong>{{ log.repo_name }}</strong>
+            {% else %}
+            <span class="text-secondary">-</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+        {% if not logs %}
+        <tr>
+          <td colspan="3" class="text-center text-secondary">No activity logged yet.</td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block page_title %}GitHub Authorization{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-body text-center py-5">
+    <h2 class="mb-4">Authorize GitHub Account</h2>
+    <p class="text-secondary mb-4">
+      Please visit the following URL and enter the code below to authorize this dashboard.
+    </p>
+    
+    <div class="mb-4">
+      <a href="{{ flow.verification_uri }}" target="_blank" class="btn btn-primary btn-lg">
+        {{ flow.verification_uri }}
+      </a>
+    </div>
+    
+    <div class="mb-4">
+      <div class="display-4 font-weight-bold text-primary">{{ flow.user_code }}</div>
+    </div>
+    
+    <div id="status-area">
+      <div class="spinner-border text-primary mb-3" role="status"></div>
+      <p id="status-text">Waiting for authorization...</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const flowId = "{{ flow_id }}";
+  const interval = {{ flow.interval }} * 1000 + 1000;
+  
+  function checkStatus() {
+    fetch(`/accounts/device-check/${flowId}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          document.getElementById('status-area').innerHTML = `
+            <div class="alert alert-success">
+              <h4 class="alert-title">Success!</h4>
+              <div class="text-secondary">${data.message} Redirecting...</div>
+            </div>
+          `;
+          setTimeout(() => {
+            window.location.href = "/accounts";
+          }, 2000);
+        } else if (data.status === 'error') {
+          document.getElementById('status-area').innerHTML = `
+            <div class="alert alert-danger">
+              <h4 class="alert-title">Error</h4>
+              <div class="text-secondary">${data.message}</div>
+            </div>
+            <a href="/accounts" class="btn btn-white mt-3">Back to Accounts</a>
+          `;
+        } else {
+          // Still pending, check again
+          setTimeout(checkStatus, interval);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        setTimeout(checkStatus, interval);
+      });
+  }
+  
+  // Start polling
+  setTimeout(checkStatus, interval);
+</script>
+{% endblock %}

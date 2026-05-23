@@ -1,0 +1,446 @@
+{% extends "base.html" %}
+
+{% block page_title %}Manage Repository: {{ repo.name }}{% endblock %}
+
+{% block content %}
+<div class="row row-cards">
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Repository Details</h3>
+        <div class="card-actions">
+          <a href="" class="btn btn-white btn-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" /><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" /></svg>
+            Refresh Status
+          </a>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="datagrid">
+          <div class="datagrid-item">
+            <div class="datagrid-title">Local Path</div>
+            <div class="datagrid-content">{{ repo.local_path }}</div>
+          </div>
+          <div class="datagrid-item">
+            <div class="datagrid-title">Remote URL</div>
+            <div class="datagrid-content">{{ repo.remote_url }}</div>
+          </div>
+          <div class="datagrid-item">
+            <div class="datagrid-title">Current Branch</div>
+            <div class="datagrid-content">
+              <div class="dropdown">
+                <button class="btn btn-sm btn-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 18m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M7 6m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 6m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M7 8v10" /><path d="M9 18h6a2 2 0 0 0 2 -2v-5" /><path d="M14 12l3 -3l3 3" /></svg>
+                  {{ status.branch }}
+                </button>
+                <ul class="dropdown-menu">
+                  <li class="dropdown-header">Switch Branch</li>
+                  {% for branch in status.branches %}
+                  <li>
+                    <form action="/repositories/checkout/{{ repo.id }}" method="POST">
+                      <input type="hidden" name="branch_name" value="{{ branch }}">
+                      <button type="submit" class="dropdown-item {% if branch == status.branch %}active{% endif %}">
+                        {{ branch }}
+                      </button>
+                    </form>
+                  </li>
+                  {% endfor %}
+                  <li><hr class="dropdown-divider"></li>
+                  <li>
+                    <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-new-branch">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-inline" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
+                      New Branch
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="datagrid-item">
+            <div class="datagrid-title">Sync Status</div>
+            <div class="datagrid-content">
+              <div class="btn-list">
+                {% if status.staged_files or status.unstaged_files or status.untracked_files %}
+                <span class="badge bg-orange-lt">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-inline" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 15m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" /><path d="M10 7h4" /><path d="M10 18v4" /><path d="M14 18v4" /><path d="M10 2v4" /><path d="M14 2v4" /></svg>
+                  Commit Pending
+                </span>
+                {% endif %}
+                
+                {% if status.ahead > 0 %}
+                <span class="badge bg-blue-lt">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-inline" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M16 9l-4 -4l-4 4" /></svg>
+                  Push Pending ({{ status.ahead }})
+                </span>
+                {% endif %}
+                
+                {% if status.behind > 0 %}
+                <span class="badge bg-purple-lt">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-inline" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M16 15l-4 4l-4 -4" /></svg>
+                  Pull Pending ({{ status.behind }})
+                </span>
+                {% endif %}
+                
+                {% if not status.is_dirty and status.ahead == 0 and status.behind == 0 %}
+                <span class="badge bg-green-lt">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-inline" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
+                  Fully Synced
+                </span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          <div class="datagrid-item">
+            <div class="datagrid-title">GitHub Actions</div>
+            <div id="action-status-area" class="datagrid-content">
+              <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="d-flex flex-wrap gap-2">
+          {% if repo.run_command %}
+          <form action="/repositories/run/{{ repo.id }}" method="POST">
+            <button type="submit" class="btn btn-success">
+              <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 4v16l13 -8z" /></svg>
+              Run Project
+            </button>
+          </form>
+          {% endif %}
+          
+          <button type="button" class="btn btn-white" onclick="apiAction('/repositories/pull/{{ repo.id }}', 'Pull', () => location.reload())">Pull</button>
+          <button type="button" class="btn btn-primary" onclick="apiAction('/repositories/push/{{ repo.id }}', 'Push', () => location.reload())">Push</button>
+          <button type="button" class="btn btn-white" onclick="apiAction('/repositories/fetch/{{ repo.id }}', 'Fetch', () => location.reload())">Fetch</button>
+          
+          <a href="/repositories/edit/{{ repo.id }}" class="btn btn-info">Edit Files</a>
+          <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modal-tag">Tag Version</button>
+          <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modal-stash">Stash</button>
+          <form action="/repositories/stash-pop/{{ repo.id }}" method="POST">
+            <button type="submit" class="btn btn-white">Pop Stash</button>
+          </form>
+          
+          {% if repo.remote_url and 'github.com' in repo.remote_url %}
+          {% set gh_url = repo.remote_url.replace('.git', '') %}
+          <a href="{{ gh_url }}/compare/{{ status.branch }}?expand=1" target="_blank" class="btn btn-github">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 0 -6 -8 -10 -8a12 12 0 0 1 12 -12c5.3 0 9 4.7 9 10c0 5.3 -3.7 10 -9 10z" /><path d="M12 22l0 -4" /><path d="M15 17l-3 3l-3 -3" /></svg>
+            Create PR
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="row row-cards mt-3">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">File Status</h3>
+            <div class="card-actions">
+              <div class="btn-list">
+                <button type="button" class="btn btn-white btn-sm" onclick="submitMulti('stage-form')">Stage Selected</button>
+                <button type="button" class="btn btn-white btn-sm" onclick="submitMulti('unstage-form')">Unstage Selected</button>
+                <form action="/repositories/stage/{{ repo.id }}" method="POST">
+                  <input type="hidden" name="file_paths" value=".">
+                  <button type="submit" class="btn btn-white btn-sm">Stage All (.)</button>
+                </form>
+              </div>
+            </div>
+          </div>
+          
+          <div class="table-responsive">
+            <form id="stage-form" action="/repositories/stage/{{ repo.id }}" method="POST" style="display:none;"></form>
+            <form id="unstage-form" action="/repositories/unstage/{{ repo.id }}" method="POST" style="display:none;"></form>
+            
+            <table class="table table-vcenter card-table">
+              <thead>
+                <tr>
+                  <th class="w-1"><input type="checkbox" class="form-check-input" onclick="toggleAll(this)"></th>
+                  <th>Status</th>
+                  <th>File</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for file in status.staged_files %}
+                <tr>
+                  <td><input type="checkbox" class="form-check-input file-check" value="{{ file }}" data-form="unstage-form"></td>
+                  <td><span class="badge bg-success">Staged</span></td>
+                  <td class="text-secondary">{{ file }}</td>
+                </tr>
+                {% endfor %}
+                
+                {% for file in status.unstaged_files %}
+                <tr>
+                  <td><input type="checkbox" class="form-check-input file-check" value="{{ file }}" data-form="stage-form"></td>
+                  <td><span class="badge bg-warning">Modified</span></td>
+                  <td>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span class="text-secondary">{{ file }}</span>
+                      <button type="button" class="btn btn-sm btn-link py-0" onclick="showDiff('{{ file }}')">Diff</button>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+                
+                {% for file in status.untracked_files %}
+                <tr>
+                  <td><input type="checkbox" class="form-check-input file-check" value="{{ file }}" data-form="stage-form"></td>
+                  <td><span class="badge bg-secondary">Untracked</span></td>
+                  <td>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span class="text-secondary">{{ file }}</span>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+                
+                {% if not status.staged_files and not status.unstaged_files and not status.untracked_files %}
+                <tr>
+                  <td colspan="3" class="text-center text-secondary">No changes detected.</td>
+                </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+    function toggleAll(source) {
+        checkboxes = document.getElementsByClassName('file-check');
+        for(var i=0, n=checkboxes.length; i<n; i++) {
+            checkboxes[i].checked = source.checked;
+        }
+    }
+
+    function submitMulti(formId) {
+        const form = document.getElementById(formId);
+        form.innerHTML = ''; // Clear previous
+        const checks = document.querySelectorAll('.file-check:checked');
+        
+        let count = 0;
+        checks.forEach(cb => {
+            if (cb.dataset.form === formId || (formId === 'stage-form' && cb.dataset.form === 'stage-form')) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'file_paths';
+                input.value = cb.value;
+                form.appendChild(input);
+                count++;
+            }
+        });
+
+        if (count > 0) {
+            form.submit();
+        } else {
+            alert("Please select files first.");
+        }
+    }
+    </script>
+
+    {% if status.staged_files or status.unstaged_files or status.untracked_files %}
+    <div class="card mt-3">
+      <div class="card-header">
+        <h3 class="card-title">Commit Changes</h3>
+      </div>
+      <form action="/repositories/commit/{{ repo.id }}" method="POST">
+        <div class="card-body">
+          <div class="mb-3">
+            <label class="form-label">Commit Message</label>
+            <textarea class="form-control" name="message" rows="3" required placeholder="What did you change?"></textarea>
+          </div>
+          {% if status.staged_files %}
+          <div class="mb-3">
+            <label class="form-label text-success">Staged for Commit ({{ status.staged_files|length }})</label>
+            <ul class="list-group list-group-flush small">
+              {% for file in status.staged_files %}
+              <li class="list-group-item py-1">{{ file }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% else %}
+          <div class="alert alert-warning mb-0">
+            <strong>Note:</strong> No files are staged. The "Stage All" logic will be applied if you commit now.
+          </div>
+          {% endif %}
+        </div>
+        <div class="card-footer text-end">
+          <button type="submit" class="btn btn-success">Stage All & Commit</button>
+          <button type="submit" name="push" value="true" class="btn btn-primary">Commit & Push</button>
+        </div>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Recent Commits</h3>
+        <div class="card-actions">
+          <a href="/repositories/history/{{ repo.id }}" class="btn btn-white btn-sm">Full History</a>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="divide-y">
+          {% for commit in status.recent_commits %}
+          <div>
+            <div class="row">
+              <div class="col-auto">
+                <span class="avatar">{{ commit.author_name[:2].upper() }}</span>
+              </div>
+              <div class="col">
+                <div class="text-truncate">
+                  <strong>{{ commit.summary }}</strong>
+                </div>
+                <div class="text-secondary small">{{ commit.author_name }} - {{ commit.date }}</div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for creating new branch -->
+<div class="modal modal-blur fade" id="modal-new-branch" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+      <form action="/repositories/create-branch/{{ repo.id }}" method="POST">
+        <div class="modal-header">
+          <h5 class="modal-title">Create New Branch</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Branch Name</label>
+            <input type="text" class="form-control" name="branch_name" required placeholder="feature/new-idea">
+            <small class="form-hint">The new branch will be created based on your current branch ({{ status.branch }}).</small>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-link link-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary ms-auto">Create Branch</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for tagging -->
+<div class="modal modal-blur fade" id="modal-tag" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+      <form action="/repositories/tag/{{ repo.id }}" method="POST">
+        <div class="modal-header">
+          <h5 class="modal-title">Create Tag (Version)</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Tag Name</label>
+            <input type="text" class="form-control" name="tag_name" required placeholder="v1.0.0">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Tag Message (Optional)</label>
+            <textarea class="form-control" name="tag_message" rows="2" placeholder="Release version 1.0.0"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-link link-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-warning ms-auto">Create Tag</button>
+        </div>
+      </form>
+    </div>
+<!-- Modal for stashing -->
+<div class="modal modal-blur fade" id="modal-stash" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+      <form action="/repositories/stash/{{ repo.id }}" method="POST">
+        <div class="modal-header">
+          <h5 class="modal-title">Stash Changes</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Stash Message</label>
+            <input type="text" class="form-control" name="message" placeholder="Work in progress...">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-link link-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-secondary ms-auto">Save Stash</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for Diff View -->
+<div class="modal modal-blur fade" id="modal-diff" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="diff-title">File Changes</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-0">
+        <pre id="diff-content" class="p-3 bg-dark text-white mb-0" style="max-height: 500px; overflow: auto; font-family: monospace;"></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function updateActionStatus() {
+    const area = document.getElementById('action-status-area');
+    fetch(`/repositories/actions-status/{{ repo.id }}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'none') {
+                area.innerHTML = '<span class="text-secondary small">No Actions found</span>';
+            } else {
+                let badgeClass = 'bg-secondary';
+                if (data.status === 'completed') {
+                    badgeClass = data.conclusion === 'success' ? 'bg-success' : 'bg-danger';
+                } else if (data.status === 'in_progress') {
+                    badgeClass = 'bg-yellow';
+                }
+                
+                area.innerHTML = `
+                    <a href="${data.url}" target="_blank" class="badge ${badgeClass} text-white text-decoration-none">
+                        ${data.status.toUpperCase()} ${data.conclusion ? '(' + data.conclusion.toUpperCase() + ')' : ''}
+                    </a>
+                `;
+            }
+        });
+}
+
+// Initial load
+updateActionStatus();
+// Refresh every 60 seconds if open
+setInterval(updateActionStatus, 60000);
+
+function showDiff(path) {
+    document.getElementById('diff-title').innerText = 'Changes in: ' + path;
+    document.getElementById('diff-content').innerText = 'Loading...';
+    var diffModal = new bootstrap.Modal(document.getElementById('modal-diff'));
+    diffModal.show();
+    
+    fetch(`/repositories/diff/{{ repo.id }}?path=${encodeURIComponent(path)}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.diff) {
+                document.getElementById('diff-content').innerText = data.diff;
+            } else if (data.error) {
+                document.getElementById('diff-content').innerText = 'Error: ' + data.error;
+            } else {
+                document.getElementById('diff-content').innerText = 'No changes or new file.';
+            }
+        });
+}
+</script>
+{% endblock %}

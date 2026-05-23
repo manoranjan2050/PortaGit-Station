@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block page_title %}Editing: {{ path }}{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">File Editor: <span class="text-primary">{{ path }}</span></h3>
+    <div class="card-actions">
+      <a href="/repositories/edit/{{ repo.id }}?path={{ '/'.join(path.split('/')[:-1]) }}" class="btn btn-white">Back</a>
+      <button type="button" onclick="saveFile()" class="btn btn-primary">Save Changes</button>
+    </div>
+  </div>
+  <div class="card-body p-0">
+    <div id="editor" style="height: 600px; width: 100%; border-radius: 0 0 12px 12px;">{{ content }}</div>
+  </div>
+</div>
+
+<form id="save-form" action="/repositories/save/{{ repo.id }}" method="POST" style="display: none;">
+  <input type="hidden" name="path" value="{{ path }}">
+  <textarea name="content" id="form-content"></textarea>
+</form>
+
+<!-- Ace Editor Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.7/ace.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.7/ext-modelist.min.js"></script>
+
+<script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    
+    // Auto-detect mode based on file extension
+    var modelist = ace.require("ace/ext/modelist");
+    var mode = modelist.getModeForPath("{{ path }}").mode;
+    editor.session.setMode(mode);
+    
+    // Editor settings
+    editor.setOptions({
+        fontSize: "14px",
+        showPrintMargin: false,
+        enableBasicAutocompletion: true,
+        enableLiveAutocompletion: true
+    });
+
+    function saveFile() {
+        const content = editor.getValue();
+        document.getElementById('form-content').value = content;
+        
+        showToast('Saving', 'Writing changes to disk...', 'info');
+        
+        const formData = new FormData(document.getElementById('save-form'));
+        fetch('/repositories/save/{{ repo.id }}', {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            if (response.ok) {
+                showToast('Success', 'File saved successfully!', 'success');
+            } else {
+                showToast('Error', 'Failed to save file.', 'danger');
+            }
+        });
+    }
+
+    // Shortcut: Ctrl+S to save
+    editor.commands.addCommand({
+        name: 'save',
+        bindKey: {win: 'Ctrl-S',  mac: 'Command-S'},
+        exec: function(editor) {
+            saveFile();
+        }
+    });
+</script>
+{% endblock %}

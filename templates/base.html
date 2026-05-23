@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+    <title>PortaGit Station Dashboard</title>
+    <!-- CSS files -->
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta20/dist/css/tabler.min.css" rel="stylesheet"/>
+    <style>
+      @import url('https://rsms.me/inter/inter.css');
+      :root {
+      	--tblr-font-sans-serif: 'Inter Var', -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif;
+      }
+      body {
+      	font-feature-settings: "cv03", "cv04", "cv11";
+        transition: all 0.3s ease;
+      }
+      .page-wrapper {
+        animation: fadeIn 0.4s ease-in-out;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border-radius: 12px;
+      }
+      .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+      }
+      .btn-github {
+        background-color: #24292e;
+        color: #ffffff;
+      }
+      .btn-github:hover {
+        background-color: #1b1f23;
+        color: #ffffff;
+      }
+      .navbar-vertical {
+        background: #1a1b1e !important;
+      }
+    </style>
+  </head>
+  <body {% if current_user.is_authenticated and current_user.theme == 'dark' %}data-bs-theme="dark"{% endif %}>
+    <div class="page">
+      {% if current_user.is_authenticated %}
+      <!-- Sidebar -->
+      <aside class="navbar navbar-vertical navbar-expand-lg" data-bs-theme="dark">
+        <div class="container-fluid">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar-menu" aria-controls="sidebar-menu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <h1 class="navbar-brand navbar-brand-autodark">
+            <a href="/">
+              <div class="d-flex align-items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-git text-orange me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M16 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M12 8m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M12 16m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M12 12h5.5" /><path d="M12 8l0 4" /><path d="M12 12l0 4" /><path d="M12 12l-1 -1" /><path d="M12 12l-1 1" /><path d="M4.893 4.893a10 10 0 1 1 14.214 14.214a10 10 0 0 1 -14.214 -14.214z" /></svg>
+                <span class="h2 mb-0">PortaGit Station</span>
+              </div>
+            </a>
+          </h1>
+          <div class="collapse navbar-collapse" id="sidebar-menu">
+            <ul class="navbar-nav pt-lg-3">
+              <li class="nav-item">
+                <a class="nav-link" href="/" >
+                  <span class="nav-link-icon d-md-none d-lg-inline-block">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l-2 0l9 -9l9 9l-2 0" /><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" /><path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" /></svg>
+                  </span>
+                  <span class="nav-link-title">Home</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/accounts" >
+                  <span class="nav-link-icon d-md-none d-lg-inline-block">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /></svg>
+                  </span>
+                  <span class="nav-link-title">Accounts</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/repositories" >
+                  <span class="nav-link-icon d-md-none d-lg-inline-block">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 18a4.6 4.4 0 0 1 0 -9a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7h-1" /><path d="M9 15l3 3l3 -3" /><path d="M12 18l0 -9" /></svg>
+                  </span>
+                  <span class="nav-link-title">Local Repos</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/github-browser" >
+                  <span class="nav-link-icon d-md-none d-lg-inline-block">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 0 -6 -8 -10 -8a12 12 0 0 1 12 -12c5.3 0 9 4.7 9 10c0 5.3 -3.7 10 -9 10z" /><path d="M12 22l0 -4" /><path d="M15 17l-3 3l-3 -3" /></svg>
+                  </span>
+                  <span class="nav-link-title">GitHub Browser</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/logs" >
+                  <span class="nav-link-icon d-md-none d-lg-inline-block">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 3l0 3" /><path d="M12 18l0 3" /><path d="M3 12l3 0" /><path d="M18 12l3 0" /><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 12l2 2" /><path d="M12 7l0 5" /></svg>
+                  </span>
+                  <span class="nav-link-title">Activity Log</span>
+                </a>
+              </li>
+            </ul>
+            <div class="mt-auto mb-3 mx-3 d-none d-lg-block">
+              <a href="https://github.com/Electroiot" target="_blank" class="card bg-dark-lt text-decoration-none">
+                <div class="card-body p-3">
+                  <div class="row align-items-center">
+                    <div class="col-auto">
+                      <span class="avatar avatar-sm rounded" style="background-image: url(https://github.com/Electroiot.png)"></span>
+                    </div>
+                    <div class="col text-truncate">
+                      <div class="font-weight-medium text-white">MANORANJAN</div>
+                      <div class="text-secondary small">Lead Developer</div>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </aside>
+      {% endif %}
+      
+      <div class="page-wrapper">
+        {% if current_user.is_authenticated %}
+        <!-- Page header -->
+        <div class="page-header d-print-none">
+          <div class="container-xl">
+            <div class="row g-2 align-items-center">
+              <div class="col">
+                <h2 class="page-title">
+                  {% block page_title %}Dashboard{% endblock %}
+                </h2>
+                <div class="text-secondary small mt-1">PortaGit Station Dashboard v1.6.0</div>
+              </div>
+              <!-- Page title actions -->
+              <div class="col-auto ms-auto d-print-none">
+                <div class="btn-list">
+                  <!-- Theme Switcher -->
+                  <div class="dropdown">
+                    <button class="btn btn-white dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                      {% if current_user.theme == 'dark' %}
+                      <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" /></svg>
+                      {% else %}
+                      <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7" /></svg>
+                      {% endif %}
+                      Theme
+                    </button>
+                    <div class="dropdown-menu">
+                      <form action="/settings/theme" method="POST">
+                        <input type="hidden" name="theme" value="light">
+                        <button type="submit" class="dropdown-item">Light Mode</button>
+                      </form>
+                      <form action="/settings/theme" method="POST">
+                        <input type="hidden" name="theme" value="dark">
+                        <button type="submit" class="dropdown-item">Dark Mode</button>
+                      </form>
+                    </div>
+                  </div>
+                  
+                  <div class="dropdown">
+                    <button class="btn btn-white dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                      {% if active_account %}
+                        {{ active_account.name }}
+                      {% else %}
+                        Select Account
+                      {% endif %}
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                      {% for account in all_accounts %}
+                      <li>
+                        <form action="/accounts/activate/{{ account.id }}" method="POST">
+                          <button type="submit" class="dropdown-item {% if account.is_active %}active{% endif %}">
+                            {{ account.name }} ({{ account.github_user }})
+                          </button>
+                        </form>
+                      </li>
+                      {% endfor %}
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item" href="/accounts">Manage Accounts</a></li>
+                    </ul>
+                  </div>
+                  <a href="/logout" class="btn btn-danger">Logout</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+        <!-- Page body -->
+        <div class="page-body">
+          <div class="container-xl">
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                {% for message in messages %}
+                  <div class="alert alert-info alert-dismissible" role="alert">
+                    <div class="d-flex">
+                      <div>{{ message }}</div>
+                    </div>
+                    <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+            {% block content %}{% endblock %}
+          </div>
+        </div>
+        <footer class="footer footer-transparent d-print-none">
+          <div class="container-xl">
+            <div class="row text-center align-items-center flex-row-reverse">
+              <div class="col-lg-auto ms-lg-auto">
+                <ul class="list-inline list-inline-dots mb-0">
+                  <li class="list-inline-item">Developed by <a href="https://github.com/Electroiot" target="_blank" class="link-secondary">MANORANJAN</a></li>
+                  <li class="list-inline-item">v1.6.0</li>
+                </ul>
+              </div>
+              <div class="col-12 col-lg-auto mt-3 mt-lg-0">
+                <ul class="list-inline list-inline-dots mb-0">
+                  <li class="list-inline-item">
+                    Copyright &copy; 2026
+                    <a href="." class="link-secondary">PortaGit Station Dashboard</a>.
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+    <!-- Libs JS -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+      <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+          <strong class="me-auto" id="toast-title">Notification</strong>
+          <small>Just now</small>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toast-body"></div>
+      </div>
+    </div>
+
+    <script>
+      function showToast(title, body, type = 'primary') {
+          const toastEl = document.getElementById('liveToast');
+          document.getElementById('toast-title').innerText = title;
+          document.getElementById('toast-body').innerText = body;
+          toastEl.classList.remove('bg-primary', 'bg-success', 'bg-danger', 'bg-warning', 'text-white');
+          if (type !== 'primary') toastEl.classList.add(`bg-${type}`, 'text-white');
+          const toast = new bootstrap.Toast(toastEl);
+          toast.show();
+      }
+
+      function apiAction(url, actionName, successCallback) {
+          showToast('Processing', `${actionName} in progress...`, 'info');
+          fetch(url, { method: 'POST' })
+              .then(response => {
+                  if (response.redirected) {
+                      window.location.href = response.url;
+                      return;
+                  }
+                  return response.json().catch(() => ({}));
+              })
+              .then(data => {
+                  if (data && data.success) {
+                      showToast('Success', data.message || `${actionName} completed!`, 'success');
+                      if (successCallback) successCallback(data);
+                  } else if (data && data.error) {
+                      showToast('Error', data.error, 'danger');
+                  }
+              })
+              .catch(err => {
+                  // If it was a standard redirect flow, we might not get JSON
+                  // So we just reload if no error was explicitly caught
+                  console.log('Action likely complete (redirect/reload)');
+              });
+      }
+    </script>
+    <!-- Tabler Core -->
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta20/dist/js/tabler.min.js" defer></script>
+  </body>
+</html>

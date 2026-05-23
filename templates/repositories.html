@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+
+{% block page_title %}Repositories{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Managed Repositories</h3>
+    <div class="card-actions d-flex align-items-center">
+      <div class="input-icon me-2">
+        <span class="input-icon-addon">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg>
+        </span>
+        <input type="text" id="repo-search" class="form-control form-control-sm" placeholder="Search repos..." onkeyup="filterRepos()">
+      </div>
+      <a href="" class="btn btn-white btn-sm me-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" /><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" /></svg>
+        Refresh
+      </a>
+      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-repo">
+        Add Existing
+      </button>
+      <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal-clone">
+        Clone New
+      </button>
+      <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modal-create">
+        Create New
+      </button>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table card-table table-vcenter text-nowrap">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Local Path</th>
+          <th>Remote URL</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for repo in repos %}
+        <tr>
+          <td>{{ repo.name }}</td>
+          <td>{{ repo.local_path }}</td>
+          <td>{{ repo.remote_url }}</td>
+          <td class="text-end">
+            <div class="btn-list flex-nowrap">
+              <a href="/repositories/manage/{{ repo.id }}" class="btn btn-sm btn-white">Manage</a>
+              <button class="btn btn-sm btn-white" onclick="openEditModal({{ repo.id }}, '{{ repo.name }}', '{{ repo.local_path }}')">Edit</button>
+              <a href="/repositories/open/{{ repo.id }}" class="btn btn-sm btn-white">Open Folder</a>
+              <form action="/repositories/delete/{{ repo.id }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to remove this repository from the dashboard? (Local files will not be deleted)')">
+                <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+        {% if not repos %}
+        <tr>
+          <td colspan="4" class="text-center text-secondary">No repositories managed yet.</td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal for adding existing repo -->
+<div class="modal modal-blur fade" id="modal-repo" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <form action="/repositories/add" method="POST">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Existing Repository</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Repository Name</label>
+            <input type="text" class="form-control" name="name" id="add-name-input" required placeholder="My Project">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Remote URL (Optional)</label>
+            <input type="text" class="form-control" name="remote_url" id="add-url-input" oninput="autoFillName('add-url-input', 'add-name-input')" placeholder="https://github.com/user/repo.git">
+            <small class="form-hint">Paste your GitHub URL here to link it automatically.</small>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Local Path</label>
+            <div class="input-group">
+              <input type="text" class="form-control" name="local_path" id="local-path-input" required placeholder="C:\Projects\my-repo">
+              <button class="btn btn-white" type="button" onclick="browseFolder('local-path-input')">Browse</button>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-link link-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary ms-auto">Add Repo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for cloning repo -->
+<div class="modal modal-blur fade" id="modal-clone" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <form action="/repositories/clone" method="POST">
+        <div class="modal-header">
+          <h5 class="modal-title">Clone New Repository</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Repository Name</label>
+            <input type="text" class="form-control" name="folder_name" id="clone-name-input" placeholder="Leave empty for default">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Repository URL</label>
+            <input type="text" class="form-control" name="url" id="clone-url-input" oninput="autoFillName('clone-url-input', 'clone-name-input')" required placeholder="https://github.com/user/repo.git">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Parent Directory (Where to clone)</label>
+            <div class="input-group">
+              <input type="text" class="form-control" name="parent_dir" id="clone-parent-input" required placeholder="C:\Projects">
+              <button class="btn btn-white" type="button" onclick="browseFolder('clone-parent-input')">Browse</button>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-link link-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-success ms-auto">Clone Repo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for creating new repo -->
+<div class="modal modal-blur fade" id="modal-create" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <form action="/repositories/create" method="POST">
+        <div class="modal-header">
+          <h5 class="modal-title">Create New Repository (Local + GitHub)</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Repository Name</label>
+            <input type="text" class="form-control" name="name" required placeholder="my-new-project">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Parent Directory (Where to create folder)</label>
+            <div class="input-group">
+              <input type="text" class="form-control" name="parent_dir" id="create-parent-input" required placeholder="C:\Projects">
+              <button class="btn btn-white" type="button" onclick="browseFolder('create-parent-input')">Browse</button>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Description (Optional)</label>
+            <input type="text" class="form-control" name="description" placeholder="A brief description of your project">
+          </div>
+          <div class="mb-3">
+            <label class="form-check">
+              <input class="form-check-input" type="checkbox" name="private">
+              <span class="form-check-label">Private Repository</span>
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-link link-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-info ms-auto">Create & Push Initial</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for editing repo -->
+<div class="modal modal-blur fade" id="modal-edit" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <form id="edit-repo-form" action="" method="POST">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Repository Settings</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Repository Name</label>
+            <input type="text" class="form-control" name="name" id="edit-name" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Local Path</label>
+            <div class="input-group">
+              <input type="text" class="form-control" name="local_path" id="edit-path" required>
+              <button class="btn btn-white" type="button" onclick="browseFolder('edit-path')">Browse</button>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Category (Group)</label>
+            <input type="text" class="form-control" name="category" id="edit-category" placeholder="e.g. Work, IoT, Personal">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Run Command</label>
+            <input type="text" class="form-control" name="run_command" id="edit-run-command" placeholder="e.g. python main.py or npm start">
+            <small class="form-hint">Command to run your project locally.</small>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-link link-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary ms-auto">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function openEditModal(id, name, path) {
+    document.getElementById('edit-repo-form').action = '/repositories/edit-meta/' + id;
+    document.getElementById('edit-name').value = name;
+    document.getElementById('edit-path').value = path;
+    var myModal = new bootstrap.Modal(document.getElementById('modal-edit'));
+    myModal.show();
+}
+
+function browseFolder(inputId) {
+    fetch('/utils/browse-folder')
+        .then(response => response.json())
+        .then(data => {
+            if (data.path) {
+                document.getElementById(inputId).value = data.path;
+            }
+        });
+}
+
+function autoFillName(urlId, nameId) {
+    const url = document.getElementById(urlId).value;
+    if (url) {
+        // Extract name from URL (handles https and git urls)
+        let name = url.split('/').pop().replace('.git', '');
+        if (name) {
+            document.getElementById(nameId).value = name;
+        }
+    }
+}
+
+function filterRepos() {
+    const query = document.getElementById('repo-search').value.toLowerCase();
+    const rows = document.querySelectorAll('.card-table tbody tr');
+    
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(query) ? '' : 'none';
+    });
+}
+</script>
+{% endblock %}
