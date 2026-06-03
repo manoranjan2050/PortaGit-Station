@@ -90,8 +90,13 @@ To create a standalone file that doesn't need Python:
 
 ## 👨‍💻 Author & Credits
 Developed with ❤️ by **MANORANJAN**.
+
+### 🌐 Connect with Me
+- **Portfolio:** [manoranjan.dev](http://manoranjan.dev)
+- **IoT Projects:** [electroiot.in](https://electroiot.in)
+- **Financial Tools:** [myfinancialcalc.com](https://www.myfinancialcalc.com)
 - **GitHub:** [@manoranjan2050](https://github.com/manoranjan2050)
-- **Website:** [electroiot.in](https://electroiot.in)
+- **Contact:** [Get in Touch](https://manoranjan.dev/contact.php)
 
 ### 🤝 Attribution & Open Source Rules
 This project is open-source, but **attribution is required**. If you use this project's code, dashboard design, or logic in your own work, you MUST provide clear credit.
