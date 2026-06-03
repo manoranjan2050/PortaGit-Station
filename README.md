@@ -28,6 +28,39 @@
 
 ---
 
+## 📸 Screenshots
+
+### 🖥️ Dashboard Overview
+![Main Dashboard](Image/main_page.jpg)
+*The central hub for managing all your repositories and viewing activity heatmaps.*
+
+### 📂 Repository Management
+<p align="center">
+  <img src="Image/repo_manage_page.jpg" width="45%" />
+  <img src="Image/local_repo_page.jpg" width="45%" />
+</p>
+*Easily organize and view details of your local repositories.*
+
+### 📝 Code Editor & Git Browser
+![Git Browser](Image/git_browser_page.jpg)
+*Integrated file browser and editor for quick code changes.*
+
+### 🔑 Account & Security
+<p align="center">
+  <img src="Image/login_page.jpg" width="45%" />
+  <img src="Image/add_account_page.jpg" width="45%" />
+</p>
+*Secure login and multi-account management with PAT encryption.*
+
+### 📜 Git Logs & Workflow
+<p align="center">
+  <img src="Image/log_page.jpg" width="45%" />
+  <img src="Image/commit_done_push_done_page.jpg" width="45%" />
+</p>
+*Track history and get instant feedback on your Git operations.*
+
+---
+
 ## 🛠️ Technology Stack
 
 - **Backend:** Python + Flask
@@ -60,15 +93,32 @@ Developed with ❤️ by **MANORANJAN**.
 - **GitHub:** [@manoranjan2050](https://github.com/manoranjan2050)
 - **Website:** [electroiot.in](https://electroiot.in)
 
-### 🤝 Contributing & Attributions
-If you use this project's dashboard design or source code in your own projects, please provide proper attribution by linking back to the original repository and the developer's GitHub profile. 
+### 🤝 Attribution & Open Source Rules
+This project is open-source, but **attribution is required**. If you use this project's code, dashboard design, or logic in your own work, you MUST provide clear credit.
 
-**To Give Credit:**
+**Required Attribution Format:**
 > "Based on [PortaGit Station](https://github.com/manoranjan2050/PortaGit-Station) by [MANORANJAN](https://github.com/manoranjan2050)"
+
+**Usage Rules:**
+1. **No Commercial Resale:** You may not sell this software as a standalone product.
+2. **Preserve Headers:** All copyright notices and developer credits in the source code must remain intact.
+3. **Open Contribution:** Improvements are welcome via Pull Requests.
+
+---
+
+## ⚠️ Legal Disclaimer
+**"AS-IS" SOFTWARE:** This software is provided for educational and productivity purposes. The author (MANORANJAN) is not responsible for any data loss, repository corruption, or security breaches resulting from the use of this tool. 
+- Always ensure your GitHub Personal Access Tokens (PAT) are stored securely.
+- Use at your own risk. The developer provides no warranty or guarantee of any kind.
 
 ---
 
 ## 📝 License
-This project is open-source under the **MIT License**. Feel free to modify and adapt it for your own portable development needs. 
+This project is licensed under the **MIT License**.
+*Copyright (c) 2026 MANORANJAN*
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software to deal in the Software without restriction, subject to the conditions outlined in the [LICENSE](LICENSE) file.
+
+---
 
 *Inspired by the need for speed and simplicity in Git workflows.*
